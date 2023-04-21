@@ -1,0 +1,14 @@
+Package: chonos-ddnsmng
+Version: 1.0.0
+Priority:
+Architecture: all
+Essential:
+Depends: curl, bind9-dnsutils
+Pre-depends:
+Suggests:
+Installed-Size:
+Maintainer: chon@grupo.cefet-rj.br
+Conflicts:
+Replaces:
+Provides:
+Description: Gerenciador de DDNS do ChonOS.

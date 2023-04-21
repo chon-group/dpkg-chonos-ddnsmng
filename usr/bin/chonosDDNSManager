@@ -1,0 +1,105 @@
+#! /bin/sh
+fqdn=".bot.chon.group"
+EmbedMAS_HOME=/opt/chonos-embMAS
+EmbedMAS_TMP=/tmp/.embedMAS
+mkdir -p $EmbedMAS_TMP
+EmbedMAS_LOGFILE=$EmbedMAS_TMP/embeddedMAS.log
+
+while getopts o:d:u:t:a:-: flag
+do
+    case "${flag}" in
+        o) opt=${OPTARG};;
+		d) domain=${OPTARG};;
+		u) user=${OPTARG};;
+		t) token=${OPTARG};;
+        a) ipv4=${OPTARG};;
+        -) other=${OPTARG};;
+    esac
+done
+
+if [ "$opt" = "conf" ]; then
+    echo "$domain:$user:$token:$ipv4" > $EmbedMAS_HOME/conf/ddns.conf
+    cp /etc/hosts $EmbedMAS_TMP/hosts.old
+    cat $EmbedMAS_TMP/hosts.old | grep -v 168.168.1 | grep -v -e '^$' > $EmbedMAS_TMP/hosts.clear
+    echo "192.168.168.1 my.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
+    echo "192.168.168.1 local.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
+    echo "192.168.168.1 $domain.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
+    echo "127.168.168.1 $domain" >> $EmbedMAS_TMP/hosts.clear
+    cat $EmbedMAS_TMP/hosts.clear > /etc/hosts
+    echo "$domain" > /etc/hostname
+    echo -n "{"
+        echo " \"domain\":\"$domain.bot.chon.group\","
+        echo "  \"message\":\"Configuração de DDNS realizada\","
+        echo -n "  \"success\":\"true\""
+    echo  "}"
+	exit 0
+fi
+
+if [ "$other" = "help" ]; then
+	man chonosDDNSManager
+    exit 0
+elif [ "$other" = "status" ]; then
+    domain=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1 | xargs`
+    ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2 | xargs`
+    ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3 | xargs`
+    localAddress=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
+    if [ "$localAddress" = "" ];
+    then
+        localAddress=`ip route | grep default | cut -d " " -f 9 | xargs`
+    fi
+    last_dnsrecord=`dig +short @ns1.chon.group $domain$fqdn 2>/dev/null`
+    echo -n "{"
+        echo " \"domain\":\"$domain.bot.chon.group\","
+        echo "  \"ddns_user\":\"$ddns_user\","
+        echo "  \"ddns_token\":\"$ddns_token\","
+        echo "  \"localAddress\":\"$localAddress\","
+        echo -n "  \"registredAddress\":\"$last_dnsrecord\""
+    echo  "}"
+    exit 0
+elif [ "$other" = "update" ]; then
+    if [ -f $EmbedMAS_TMP/connected ]; then
+        conected=`cat $EmbedMAS_TMP/connected`
+    else
+        conected="1"
+    fi
+
+    if [ "$conected" = "1" ]; then
+        IP=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
+        if [ "$IP" = "" ];
+        then
+            IP=`ip route | grep default | cut -f 9 -d " " | xargs`
+        fi
+
+        if [ -f $EmbedMAS_TMP/last_IP ]; then
+            last_IP=`cat $EmbedMAS_TMP/last_IP`
+        else
+            last_IP="unknown"
+        fi
+        
+        if [ -f $EmbedMAS_TMP/last_hostname ]; then
+            last_hostname=`cat $EmbedMAS_TMP/last_hostname`
+        else
+            last_hostname="unknown"
+        fi
+
+        hostname=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1`
+        last_dnsrecord=`dig +short @ns1.chon.group $hostname$fqdn`
+
+        if [ "$hostname" != "$last_hostname" ] ||  [ "$IP" != "$last_IP" ] || [ "$IP" != "$last_dnsrecord" ]
+        then
+            ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2`
+            ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3`
+            echo "[chonos-ddnsmng] Executing DDNS Update... $IP - $hostname.bot.chon.group " >> $EmbedMAS_LOGFILE
+            curl -u $ddns_user:$ddns_token "https://ddns.chon.group/update/index.php?subdomain=$hostname&address=$IP"
+            echo $hostname > $EmbedMAS_TMP/last_hostname
+            echo $IP > $EmbedMAS_TMP/last_IP    
+            exit 0 
+        else
+            exit 0 
+        fi
+    else
+        exit 1
+    fi
+fi
+
+chonosDDNSManager --help

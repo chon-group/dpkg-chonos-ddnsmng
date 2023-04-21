@@ -1,0 +1,5 @@
+#!/bin/bash
+file="/usr/bin/chonosDDNSConf"
+if [ -f "$file" ] ; then
+    rm "$file"
+fi
