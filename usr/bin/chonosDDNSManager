@@ -1,6 +1,6 @@
 #! /bin/sh
 fqdn=".bot.chon.group"
-EmbedMAS_HOME=/opt/chonos-embMAS
+EmbedMAS_HOME=/opt/group.chon
 EmbedMAS_TMP=/tmp/.embedMAS
 mkdir -p $EmbedMAS_TMP
 EmbedMAS_LOGFILE=$EmbedMAS_TMP/embeddedMAS.log
@@ -57,6 +57,11 @@ elif [ "$other" = "status" ]; then
     echo  "}"
     exit 0
 elif [ "$other" = "update" ]; then
+    # Broadcast Announcement
+    IP=`/usr/bin/hostname -I`
+	BotName=`/usr/bin/hostname`
+    /usr/bin/python3 /opt/group.chon/bin/lan/broadcast.py $BotName $IP
+
     if [ -f $EmbedMAS_TMP/connected ]; then
         conected=`cat $EmbedMAS_TMP/connected`
     else

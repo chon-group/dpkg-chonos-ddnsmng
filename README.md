@@ -2,7 +2,8 @@
 
 |![chonos-ddns](https://github.com/chon-group/dpkg-chonos-ddnsmng/assets/32855001/cf909ae3-7efa-47f1-8e32-d15a7a9d6808)|
 |:--:|
-|ChonOS DDNS implements a Dynamic DNS accountable for maintaining the embedded system's _Fully Qualified Domain Name_ updated. So, the designer can access the system directly through its name without worrying about discovering the IP address when changing networks. Moreover, this module implements a _Simple Service Discovery Protocol_ server to announce the cognitive device into the local area network. So, the embedded multi-agent system can exchange information about themselves and the services they provide to others.|
+|ChonOS DDNS implements a Dynamic DNS Client accountable for maintaining the embedded system's _Fully Qualified Domain Name_ updated. So, the designer can access the system directly through its name without worrying about discovering the IP address when changing networks.|
+|Moreover, this module implements a _Simple Service Discovery Protocol_ server to announce the cognitive device into the local area network. So, the embedded multi-agent system can exchange information about themselves and the services they provide to others.|
 
 ## How to Install?
 1) In a terminal run the commands below:
