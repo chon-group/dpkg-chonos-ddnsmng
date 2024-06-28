@@ -44,7 +44,7 @@ sudo chonosDDNSManager -o conf -d myrobot -u "ddns_user" -t "ddns_token" -a "1.2
 
 
 ## COPYRIGHT
-<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />The Chonos-Log is part of the [_Cognitive Hardware on Networks Operating
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />The Chonos DDNS Manager is part of the [_Cognitive Hardware on Networks Operating
 System (chonOS)_](http://os.chon.group/) and is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>. The licensor cannot revoke these freedoms as long as you follow the license terms:
 
 * __Attribution__ — You must give __appropriate credit__ like below:
