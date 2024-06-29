@@ -17,32 +17,59 @@ do
     esac
 done
 
-if [ "$opt" = "conf" ]; then
-    echo "$domain:$user:$token:$ipv4" > $EmbedMAS_HOME/conf/ddns.conf
+#getting local conf informations
+if [ "$domain" = "" ]; then
+    DDNS_SUBDOMAIN=`head -1 $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1 | xargs`
+else
+    DDNS_SUBDOMAIN=$domain
+fi
+
+if [ "$user" = "" ]; then
+    DDNS_USERNAME=`head -1 $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2 | xargs`
+else
+    DDNS_USERNAME=$user
+fi
+
+if [ "$token" = "" ]; then
+    DDNS_USERKEY=`head -1 $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3 | xargs`
+else
+    $DDNS_USERKEY=$token
+fi
+
+if [ "$ipv4" = "" ]; then
+    DDNS_STATICIPV4=`head -1 $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
+else
+    DDNS_STATICIPV4=$ipv4
+fi
+
+
+if [ "$opt" = "conf" ] || [ "$other" = "conf" ]; then
+    echo "$DDNS_SUBDOMAIN:$DDNS_USERNAME:$DDNS_USERKEY:$DDNS_STATICIPV4" > $EmbedMAS_HOME/conf/ddns.conf
+    
     cp /etc/hosts $EmbedMAS_TMP/hosts.old
     cat $EmbedMAS_TMP/hosts.old | grep -v 168.168.1 | grep -v -e '^$' > $EmbedMAS_TMP/hosts.clear
     echo "192.168.168.1 my.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
-    echo "192.168.168.1 local.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
-    echo "192.168.168.1 $domain.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
-    echo "127.168.168.1 $domain" >> $EmbedMAS_TMP/hosts.clear
+    echo "127.168.168.1 local.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear          #to verify integration with chonos-network
+    echo "$DDNS_STATICIPV4 $DDNS_SUBDOMAIN.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear     #to verify integration with chonos-network
+    echo "127.168.168.1 $DDNS_SUBDOMAIN" >> $EmbedMAS_TMP/hosts.clear
     cat $EmbedMAS_TMP/hosts.clear > /etc/hosts
-    echo "$domain" > /etc/hostname
+    
+    echo "$DDNS_SUBDOMAIN" > /etc/hostname
     echo -n "{"
-        echo " \"domain\":\"$domain.bot.chon.group\","
-        echo "  \"message\":\"Configuração de DDNS realizada\","
+        echo " \"domain\":\"$DDNS_SUBDOMAIN$fqdn\","
+        echo "  \"message\":\"DDNS configuration done\","
         echo -n "  \"success\":\"true\""
     echo  "}"
-	exit 0
-fi
-
-if [ "$other" = "help" ]; then
+    exit 0
+elif [ "$other" = "help" ]; then
 	man chonosDDNSManager
     exit 0
 elif [ "$other" = "status" ]; then
-    domain=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1 | xargs`
-    ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2 | xargs`
-    ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3 | xargs`
-    localAddress=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
+#    domain=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1 | xargs`
+#    ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2 | xargs`
+#    ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3 | xargs`
+#    localAddress=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
+    localAddress=$DDNS_STATICIPV4
     if [ "$localAddress" = "" ];
     then
         localAddress=`ip route | grep default | cut -d " " -f 9 | xargs`
@@ -59,8 +86,8 @@ elif [ "$other" = "status" ]; then
 elif [ "$other" = "update" ]; then
     # Broadcast Announcement
     IP=`/usr/bin/hostname -I`
-	BotName=`/usr/bin/hostname`
-    /usr/bin/python3 /opt/group.chon/bin/lan/broadcast.py $BotName $IP
+	#BotName=`/usr/bin/hostname`
+    /usr/bin/python3 /opt/group.chon/bin/lan/broadcast.py $DDNS_SUBDOMAIN $IP
 
     if [ -f $EmbedMAS_TMP/connected ]; then
         conected=`cat $EmbedMAS_TMP/connected`

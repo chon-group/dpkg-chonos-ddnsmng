@@ -19,13 +19,13 @@ sudo apt install chonos-ddnsmng
 List of options and arguments:
 |Argument|Description|
 |-|-|
-|\--status|show the DDNS registration status|
-|\--update|update the DDNS registration|
-|-o conf|configures the Chon DDNS client|
-|-d \[domain\]|Chon DDNS domain name|
-|-u \[user\]|Chon DDNS user name|
-|-t \[token\]|Chon DDNS user token|
-|-a \[IPv4\]|IPv4 address|
+|--status|show the DDNS registration status|
+|--update|update the DDNS registration|
+|--conf|configures the Chon DDNS client|
+||-d \[domain\] setting the subdomain name|
+||-u \[user\] setting the DDNS client user name|
+||-t \[token\] setting the DDNS client user token|
+||-a \[IPv4\] setting a static IPv4 address|
 
 ### EXAMPLES
 
@@ -34,12 +34,12 @@ Access https://ddns.chon.group/ to register credentials to use the service.
 
 1. Configures the DDNS Server to resolve the FQDN myrobot.bot.chon.group address for the machine\'s local IPv4 address.
 ```sh
-sudo chonosDDNSManager -o conf -d myrobot -u "ddns_user" -t "ddns_token"
+sudo chonosDDNSManager --conf -d myrobot -u "ddns_user" -t "ddns_token"
 ```
 
 2. Configures the DDNS Server to resolve the FQDN myrobot.bot.chon.group address for the IPv4 1.2.3.4.
 ```sh
-sudo chonosDDNSManager -o conf -d myrobot -u "ddns_user" -t "ddns_token" -a "1.2.3.4"
+sudo chonosDDNSManager --conf -d myrobot -u "ddns_user" -t "ddns_token" -a "1.2.3.4"
 ```
 
 
