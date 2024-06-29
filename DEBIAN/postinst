@@ -1,6 +1,7 @@
 #!/bin/bash
+gzip -f /usr/local/man/man1/chonosDDNSManager.1
+mandb
+
 MACHINENAME=`/usr/bin/hostname`
 chonosDDNSManager --conf -d $MACHINENAME
 chonosDDNSManager --update
-gzip -f /usr/local/man/man1/chonosDDNSManager.1
-mandb

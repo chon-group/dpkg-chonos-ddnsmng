@@ -38,9 +38,16 @@ fi
 
 if [ "$ipv4" = "" ]; then
     DDNS_STATICIPV4=`head -1 $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
+    if [ "$DDNS_STATICIPV4" = "" ]; then
+        default_interface=$(ip route | grep default | awk '{print $5}')
+        LOCALIPV4=$(ip -4 addr show $default_interface | grep inet | awk '{print $2}' | cut -d/ -f1)
+    else
+        LOCALIPV4=$DDNS_STATICIPV4
+    fi
 else
     DDNS_STATICIPV4=$ipv4
 fi
+
 
 
 if [ "$opt" = "conf" ] || [ "$other" = "conf" ]; then
@@ -69,25 +76,26 @@ elif [ "$other" = "status" ]; then
 #    ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2 | xargs`
 #    ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3 | xargs`
 #    localAddress=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 4 | xargs`
-    localAddress=$DDNS_STATICIPV4
-    if [ "$localAddress" = "" ];
-    then
-        localAddress=`ip route | grep default | cut -d " " -f 9 | xargs`
-    fi
-    last_dnsrecord=`dig +short @ns1.chon.group $domain$fqdn 2>/dev/null`
+#    localAddress=$DDNS_STATICIPV4
+#    if [ "$localAddress" = "" ];
+#    then
+#        #localAddress=`ip route | grep default | cut -d " " -f 9 | xargs`
+#        
+#    fi
+    last_dnsrecord=`dig +short @ns1.chon.group $DDNS_SUBDOMAIN$fqdn 2>/dev/null`
     echo -n "{"
-        echo " \"domain\":\"$domain.bot.chon.group\","
-        echo "  \"ddns_user\":\"$ddns_user\","
-        echo "  \"ddns_token\":\"$ddns_token\","
-        echo "  \"localAddress\":\"$localAddress\","
+        echo " \"domain\":\"$DDNS_SUBDOMAIN$fqdn\","
+        echo "  \"ddns_user\":\"$DDNS_USERNAME\","
+        echo "  \"ddns_token\":\"$DDNS_USERKEY\","
+        echo "  \"localAddress\":\"$LOCALIPV4\","
         echo -n "  \"registredAddress\":\"$last_dnsrecord\""
     echo  "}"
     exit 0
 elif [ "$other" = "update" ]; then
     # Broadcast Announcement
-    IP=`/usr/bin/hostname -I`
+    #IP=`/usr/bin/hostname -I`
 	#BotName=`/usr/bin/hostname`
-    /usr/bin/python3 /opt/group.chon/bin/lan/broadcast.py $DDNS_SUBDOMAIN $IP
+    /usr/bin/python3 /opt/group.chon/bin/lan/broadcast.py $DDNS_SUBDOMAIN $LOCALIPV4
 
     if [ -f $EmbedMAS_TMP/connected ]; then
         conected=`cat $EmbedMAS_TMP/connected`
@@ -114,17 +122,17 @@ elif [ "$other" = "update" ]; then
             last_hostname="unknown"
         fi
 
-        hostname=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1`
+#        hostname=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 1`
         last_dnsrecord=`dig +short @ns1.chon.group $hostname$fqdn`
 
-        if [ "$hostname" != "$last_hostname" ] ||  [ "$IP" != "$last_IP" ] || [ "$IP" != "$last_dnsrecord" ]
+        if [ "$DDNS_SUBDOMAIN" != "$last_hostname" ] ||  [ "$LOCALIPV4" != "$last_IP" ] || [ "$LOCALIPV4" != "$last_dnsrecord" ]
         then
-            ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2`
-            ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3`
-            echo "[chonos-ddnsmng] Executing DDNS Update... $IP - $hostname.bot.chon.group " >> $EmbedMAS_LOGFILE
-            curl -u $ddns_user:$ddns_token "https://ddns.chon.group/update/index.php?subdomain=$hostname&address=$IP"
-            echo $hostname > $EmbedMAS_TMP/last_hostname
-            echo $IP > $EmbedMAS_TMP/last_IP    
+#            ddns_user=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 2`
+#            ddns_token=`cat $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3`
+            echo "[chonos-ddnsmng] Executing DDNS Update... $LOCALIPV4 - $DDNS_SUBDOMAIN$fqdn " >> $EmbedMAS_LOGFILE
+            curl -u $DDNS_USERNAME:$DDNS_USERKEY "https://ddns.chon.group/update/index.php?subdomain=$DDNS_SUBDOMAIN&address=$LOCALIPV4"
+            echo $DDNS_SUBDOMAIN > $EmbedMAS_TMP/last_hostname
+            echo $LOCALIPV4 > $EmbedMAS_TMP/last_IP    
             exit 0 
         else
             exit 0 
