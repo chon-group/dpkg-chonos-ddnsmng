@@ -1,10 +1,10 @@
 Package: chonos-ddnsmng
-Version: 1.5.2
+Version: 1.5.3
 Priority:
 Architecture: all
 Essential:
 Depends: curl, bind9-dnsutils
-Pre-depends:
+Pre-depends: chonos-log
 Suggests:
 Installed-Size:
 Maintainer: chon@grupo.cefet-rj.br
