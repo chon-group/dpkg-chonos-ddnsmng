@@ -37,7 +37,7 @@ fi
 if [ "$token" = "" ]; then
     DDNS_USERKEY=`head -1 $EmbedMAS_HOME/conf/ddns.conf | cut -d ":" -f 3 | xargs`
 else
-    $DDNS_USERKEY=$token
+    DDNS_USERKEY=$token
 fi
 
 if [ "$ipv4" = "" ]; then
