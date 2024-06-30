@@ -1,3 +1,8 @@
 #!/bin/bash
 gzip -f /usr/local/man/man1/chonosDDNSManager.1
 mandb
+
+if [ -f "/tmp/ddns.conf.OLD" ]; then
+	cp /tmp/ddns.conf.OLD /opt/group.chon/conf/ddns.conf
+    chonosDDNSManager --update
+fi

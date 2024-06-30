@@ -86,6 +86,7 @@ elif [ "$other" = "status" ]; then
 elif [ "$other" = "update" ]; then
 
     if [ "$DDNS_SUBDOMAIN" = "local" ]; then
+        echo "Skipping because the sudomain is $DDNS_SUBDOMAIN"
         exit 0
     fi
 
