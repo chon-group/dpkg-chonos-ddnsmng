@@ -59,8 +59,11 @@ if [ "$opt" = "conf" ] || [ "$other" = "conf" ]; then
     cp /etc/hosts $EmbedMAS_TMP/hosts.old
     cat $EmbedMAS_TMP/hosts.old | grep -v 127.168.168.1 | grep -v -e '^$' | grep -v bot.chon > $EmbedMAS_TMP/hosts.clear
     echo "192.168.168.1 my.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
-    echo "127.168.168.1 local.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear          #to verify integration with chonos-network
-    echo "$CURRENTIPV4 $DDNS_SUBDOMAIN.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear #to verify integration with chonos-network
+    if [ "$DDNS_SUBDOMAIN" != "local" ]; then
+        echo "$CURRENTIPV4 $DDNS_SUBDOMAIN.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear #to verify integration with chonos-network   
+    else
+        echo "127.168.168.1 local.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear          #to verify integration with chonos-network
+    fi
     echo "127.168.168.1 $DDNS_SUBDOMAIN" >> $EmbedMAS_TMP/hosts.clear
     cat $EmbedMAS_TMP/hosts.clear > /etc/hosts
     
