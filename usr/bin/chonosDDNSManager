@@ -57,14 +57,13 @@ if [ "$opt" = "conf" ] || [ "$other" = "conf" ]; then
     echo "$DDNS_SUBDOMAIN:$DDNS_USERNAME:$DDNS_USERKEY:$DDNS_STATICIPV4" > $EmbedMAS_HOME/conf/ddns.conf
     
     cp /etc/hosts $EmbedMAS_TMP/hosts.old
-    cat $EmbedMAS_TMP/hosts.old | grep -v 168.168.1 | grep -v -e '^$' > $EmbedMAS_TMP/hosts.clear
+    cat $EmbedMAS_TMP/hosts.old | grep -v 127.168.168.1 | grep -v -e '^$' | grep -v bot.chon > $EmbedMAS_TMP/hosts.clear
     echo "192.168.168.1 my.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear
     echo "127.168.168.1 local.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear          #to verify integration with chonos-network
     echo "$CURRENTIPV4 $DDNS_SUBDOMAIN.bot.chon.group" >> $EmbedMAS_TMP/hosts.clear #to verify integration with chonos-network
     echo "127.168.168.1 $DDNS_SUBDOMAIN" >> $EmbedMAS_TMP/hosts.clear
     cat $EmbedMAS_TMP/hosts.clear > /etc/hosts
     
-    echo "$DDNS_SUBDOMAIN" > /etc/hostname
     echo -n "{"
         echo " \"domain\":\"$DDNS_SUBDOMAIN$fqdn\","
         echo "  \"message\":\"DDNS configuration done\","
@@ -85,8 +84,18 @@ elif [ "$other" = "status" ]; then
     echo  "}"
     exit 0
 elif [ "$other" = "update" ]; then
+
+    if [ "$DDNS_SUBDOMAIN" = "local" ]; then
+        exit 0
+    fi
+
     chonos-log -e "[chonos-ddnsmng] Announcing in neighborhood $DDNS_SUBDOMAIN $CURRENTIPV4" 
     /usr/bin/python3 /opt/group.chon/bin/lan/broadcast.py $DDNS_SUBDOMAIN $CURRENTIPV4
+
+    MACHINAME=$(/usr/bin/hostname)
+    if [ "$DDNS_SUBDOMAIN" != "$MACHINAME" ]; then
+        /usr/bin/hostname -b $DDNS_SUBDOMAIN
+    fi
 
     if [ -f $EmbedMAS_TMP/connected ]; then
         conected=`cat $EmbedMAS_TMP/connected`
