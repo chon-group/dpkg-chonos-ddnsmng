@@ -1,0 +1,22 @@
+#!/bin/bash
+if [ -f "/opt/group.chon/conf/ddns.conf" ]; then
+	cp /opt/group.chon/conf/ddns.conf /tmp/ddns.conf.OLD
+fi
+
+
+SERVICE="chonos-ddnsAutoUpdater.service"
+STATUS_FILE="/tmp/status_$SERVICE.txt"
+
+if [ -d /run/systemd/system ]; then
+	
+	if systemctl is-active --quiet $SERVICE; then
+		echo "active" > $STATUS_FILE
+	elif systemctl is-enabled --quiet $SERVICE; then
+		echo "enabled" > $STATUS_FILE
+	else
+		echo "inactive" > $STATUS_FILE
+	fi
+    
+	systemctl stop chonos-ddnsAutoUpdater.service 
+fi
+systemctl disable chonos-ddnsAutoUpdater.service

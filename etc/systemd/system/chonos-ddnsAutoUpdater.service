@@ -1,0 +1,12 @@
+[Unit]
+Description=ChonOS DDNS AutoUpdater
+After=network.target
+
+[Service]
+ExecStart=/usr/bin /opt/group.chon/bin/lan/autoDDNSUpdater.sh
+User=root
+WorkingDirectory=/root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

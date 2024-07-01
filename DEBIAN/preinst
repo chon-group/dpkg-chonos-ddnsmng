@@ -1,4 +1,0 @@
-#!/bin/bash
-if [ -f "/opt/group.chon/conf/ddns.conf" ]; then
-	cp /opt/group.chon/conf/ddns.conf /tmp/ddns.conf.OLD
-fi

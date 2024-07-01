@@ -2,7 +2,27 @@
 gzip -f /usr/local/man/man1/chonosDDNSManager.1
 mandb
 
-if [ -f "/tmp/ddns.conf.OLD" ]; then
-	cp /tmp/ddns.conf.OLD /opt/group.chon/conf/ddns.conf
-    chonosDDNSManager --update
+SERVICE="chonos-ddnsAutoUpdater.service"
+STATUS_FILE="/tmp/status_$SERVICE.txt"
+if [ -d /run/systemd/system ]; then
+    if [ -f "/tmp/ddns.conf.OLD" ]; then
+    #	cp /tmp/ddns.conf.OLD /opt/group.chon/conf/ddns.conf    -- habilitar na próxima atualização
+        chonosDDNSManager --update
+    fi
+
+    if [ -f $STATUS_FILE ]; then
+        STATUS=$(cat $STATUS_FILE)
+        case $STATUS in
+            "active")
+                systemctl enable $SERVICE
+                systemctl start $SERVICE
+                ;;
+            "enabled")
+                systemctl enable $SERVICE
+                ;;
+            *)
+                echo "Serviço não estava ativo nem habilitado anteriormente."
+                ;;
+        esac
+    fi
 fi
