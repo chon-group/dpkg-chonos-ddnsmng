@@ -98,7 +98,8 @@ elif [ "$other" = "update" ]; then
 
     MACHINAME=$(/usr/bin/hostname)
     if [ "$DDNS_SUBDOMAIN" != "$MACHINAME" ]; then
-        /usr/bin/hostname -b $DDNS_SUBDOMAIN
+        echo $DDNS_SUBDOMAIN | tee /etc/hostname
+        sed -i "s/127.0.1.1 .*/127.0.1.1 $DDNS_SUBDOMAIN/g" /etc/hosts
     fi
 
     if [ -f $EmbedMAS_TMP/connected ]; then
