@@ -1,5 +1,5 @@
 Package: chonos-ddnsmng
-Version: 1.6.2
+Version: 26.6.1
 Priority:
 Architecture: all
 Essential:
@@ -7,7 +7,8 @@ Depends: curl, bind9-dnsutils
 Pre-depends: chonos-log
 Suggests:
 Installed-Size:
-Maintainer: chon@grupo.cefet-rj.br
+Maintainer: Nilson Lazarin <chon@grupo.cefet-rj.br>
+Homepage: https://github.com/chon-group/dpkg-chonos-ddnsmng
 Conflicts:
 Replaces:
 Provides:

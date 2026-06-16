@@ -18,8 +18,8 @@ do
 done
 
 #getting local ipv4 address
-default_interface=$(ip route | grep default | awk '{print $5}')
-CURRENTIPV4=$(ip -4 addr show $default_interface | grep inet | awk '{print $2}' | cut -d/ -f1)
+default_interface=$(ip route | grep default | head -1 | awk '{print $5}')
+CURRENTIPV4=$(ip -4 addr show $default_interface | grep inet | head -1 | awk '{print $2}' | cut -d/ -f1)
 
 #getting local conf informations
 if [ "$domain" = "" ]; then
