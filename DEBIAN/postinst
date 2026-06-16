@@ -1,6 +1,6 @@
 #!/bin/bash
-gzip -f /usr/local/man/man1/chonosDDNSManager.1
-mandb
+#gzip -f /usr/local/man/man1/chonosDDNSManager.1
+#mandb
 
 SERVICE="chonos-ddnsAutoUpdater.service"
 STATUS_FILE="/tmp/status_$SERVICE.txt"

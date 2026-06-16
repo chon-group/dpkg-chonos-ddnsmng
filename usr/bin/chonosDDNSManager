@@ -74,7 +74,7 @@ if [ "$opt" = "conf" ] || [ "$other" = "conf" ]; then
     echo  "}"
     exit 0
 elif [ "$other" = "help" ]; then
-	man chonosDDNSManager
+    echo "Consult tutorial at: https://github.com/chon-group/dpkg-chonos-ddnsmng"
     exit 0
 elif [ "$other" = "status" ]; then
     last_dnsrecord=`dig +short @ns1.chon.group $DDNS_SUBDOMAIN$fqdn 2>/dev/null`
